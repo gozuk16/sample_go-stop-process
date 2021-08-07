@@ -14,8 +14,8 @@ import (
 func stopProc(done chan<- error) {
 	stopDir := "/Users/gozu/projects/jetty-distribution-9.4.43.v20210629/demo-base"
 	stopCmd := "java"
-	stopArgs := strings.Fields("-jar ../start.jar STOP.PORT=28282 STOP.KEY=secret --stop")
-	//stopArgs := strings.Fields("-jar ../start.jar STOP.PORT=28282 STOP.KEY=secret jetty.http.port=8081 jetty.ssl.port=8444")
+	//stopArgs := strings.Fields("-jar ../start.jar STOP.PORT=28282 STOP.KEY=secret --stop")
+	stopArgs := strings.Fields("-jar ../start.jar STOP.PORT=28282 STOP.KEY=secret jetty.http.port=8081 jetty.ssl.port=8444")
 
 	// process stop
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -23,6 +23,7 @@ func stopProc(done chan<- error) {
 	cmd := exec.CommandContext(ctx, stopCmd, stopArgs...)
 	cmd.Dir = stopDir
 	// cmd.Env = startEnv
+	log.Println("--- stop cmd start ---")
 	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
