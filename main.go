@@ -1,13 +1,14 @@
 package main
 
 import (
-	"bufio"
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
 	"strings"
+	"time"
 )
 
 func stopProc(done chan<- error) {
@@ -17,27 +18,19 @@ func stopProc(done chan<- error) {
 	//stopArgs := strings.Fields("-jar ../start.jar STOP.PORT=28282 STOP.KEY=secret jetty.http.port=8081 jetty.ssl.port=8444")
 
 	// process stop
-	cmd := exec.Command(stopCmd, stopArgs...)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, stopCmd, stopArgs...)
 	cmd.Dir = stopDir
 	// cmd.Env = startEnv
-	stdout, _ := cmd.StdoutPipe()
-	stderr, _ := cmd.StderrPipe()
-	err := cmd.Start()
+	stdoutStderr, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("--- stderr ---")
-	scanner2 := bufio.NewScanner(stderr)
-	for scanner2.Scan() {
-		fmt.Println(scanner2.Text())
-	}
-
-	fmt.Println("--- stdout ---")
-	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-	}
+	log.Println("--- stdout & stderr ---")
+	log.Printf("%s\n", stdoutStderr)
+	log.Println("stop process")
 
 	done <- nil
 	close(done)
