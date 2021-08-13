@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -42,7 +43,8 @@ func stopProcByPid(done chan<- error, pid int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = p.Kill()
+	stopSignal := syscall.SIGTERM
+	err = p.Signal(stopSignal)
 	if err != nil {
 		log.Fatal(err)
 	}
