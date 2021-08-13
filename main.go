@@ -37,13 +37,31 @@ func stopProc(done chan<- error) {
 	close(done)
 }
 
+func stopProcByPid(done chan<- error, pid int) {
+	p, err := os.FindProcess(pid)
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = p.Kill()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("stop process")
+
+	done <- nil
+	close(done)
+}
+
 func main() {
 	// Ctrl+Cを受け取る
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt)
 
 	done := make(chan error, 1)
-	go stopProc(done)
+	//go stopProc(done)
+	pid := 22842
+	go stopProcByPid(done, pid)
 
 	select {
 	case <-quit:
