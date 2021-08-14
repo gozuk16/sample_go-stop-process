@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+// overwritten with os.Interrupt on windows environment (see main_windows.go)
+var stopSignal = syscall.SIGTERM
+
 func stopProc(done chan<- error) {
 	stopDir := "/Users/gozu/projects/jetty-distribution-9.4.43.v20210629/demo-base"
 	stopCmd := "java"
