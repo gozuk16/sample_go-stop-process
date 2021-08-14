@@ -46,7 +46,7 @@ func stopProcByPid(done chan<- error, pid int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	stopSignal := syscall.SIGTERM
+	//stopSignal := syscall.SIGTERM
 	err = p.Signal(stopSignal)
 	if err != nil {
 		log.Fatal(err)
@@ -65,7 +65,7 @@ func main() {
 
 	done := make(chan error, 1)
 	//go stopProc(done)
-	pid := 22842
+	pid := 26289
 	go stopProcByPid(done, pid)
 
 	select {
